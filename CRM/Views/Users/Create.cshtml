@@ -1,0 +1,92 @@
+﻿@using CRM.Helpers
+@model CRM.Models.User
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>ایجاد کاربر</h1>
+
+<h4>کاربر</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">نام</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname" class="control-label">نام خانوادگی</label>
+                <input asp-for="Surname" class="form-control" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateOfBirth" class="control-label">تاریخ تولد (شمسی)</label>
+                <input type="text" name="DateOfBirth" value="@Model?.DateOfBirth.ToPersianDate()" class="form-control persian-datepicker" placeholder="1404/02/18" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Login" class="control-label">نام کاربری</label>
+                <input asp-for="Login" class="form-control" />
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">رمز عبور</label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @if (User.FindFirst("role").Value == "Moderator")
+                {
+                    <input type="hidden" asp-for="RoleId" class="form-control" value="3" />
+                }
+                else
+                {
+                    <label asp-for="RoleId" class="control-label">نقش</label>
+                    <select asp-for="RoleId" class="form-control">
+                        <option value="1">۱ - مدیر سیستم</option>
+                        <option value="2">۲ - ناظر</option>
+                        <option value="3">۳ - کاربر</option>
+                    </select>
+                }
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="ایجاد" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">بازگشت به لیست کاربران</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".persian-datepicker").persianDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                initialValue: true,
+                minDate: new Date(1910, 0, 1), // معادل 1288 شمسی
+                maxDate: new Date() // محدود به امروز
+            });
+        });
+    </script>
+}

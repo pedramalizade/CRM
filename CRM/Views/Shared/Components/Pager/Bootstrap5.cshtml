@@ -1,0 +1,80 @@
+﻿@model ReflectionIT.Mvc.Paging.IPagingList
+@* صفحه‌بندی ساده با Bootstrap 5 *@
+
+@{
+    var start = this.Model.StartPageIndex;
+    var stop = this.Model.StopPageIndex;
+}
+
+@if (this.Model.PageCount > 1)
+{
+    <ul class="pagination pagination-sm">
+
+        @if (start > 1)
+        {
+            <li class="page-item">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(1))" aria-label="اولین" class="page-link">
+                    <span aria-hidden="true">اولین</span>
+                </a>
+            </li>
+        }
+
+        @if (this.Model.PageIndex > 1)
+        {
+            <li class="page-item">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(this.Model.PageIndex - 1))" aria-label="قبلی" class="page-link">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(this.Model.PageIndex - 1))" aria-label="قبلی" class="page-link">
+                    <span aria-hidden="false">&laquo;</span>
+                </a>
+            </li>
+        }
+
+        @for (int i = start; i <= stop; i++)
+        {
+            <li class="page-item @((Model.PageIndex == i) ? "active" : null)">
+                @if (i == 1)
+                {
+                    @Html.ActionLink("اول", Model.Action, Model.GetRouteValueForPage(i), new { @class = "page-link" })
+                }
+                else
+                {
+                    @Html.ActionLink(i.ToString(), Model.Action, Model.GetRouteValueForPage(i), new { @class = "page-link" })
+                }
+            </li>
+        }
+
+        @if (this.Model.PageIndex < this.Model.PageCount)
+        {
+            <li class="page-item">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(this.Model.PageIndex + 1))" aria-label="بعدی" class="page-link">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(this.Model.PageIndex + 1))" aria-label="بعدی" class="page-link">
+                    <span aria-hidden="false">&raquo;</span>
+                </a>
+            </li>
+        }
+
+        @if (stop < this.Model.PageCount)
+        {
+            <li class="page-item">
+                <a href="@Url.Action(Model.Action, Model.GetRouteValueForPage(this.Model.PageCount))" aria-label="آخرین" class="page-link">
+                    <span aria-hidden="true">آخرین</span>
+                </a>
+            </li>
+        }
+
+    </ul>
+}

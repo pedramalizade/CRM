@@ -1,0 +1,13 @@
+﻿@model CRM.Models.User
+@using Microsoft.AspNetCore.Authentication
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="text-center">
+    <h1 class="display-4">
+        سلام @User.FindFirst("role").Value @User.FindFirst("user").Value
+    </h1>
+</div>
+

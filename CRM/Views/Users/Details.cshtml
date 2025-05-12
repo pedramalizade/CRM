@@ -1,0 +1,72 @@
+﻿@using CRM.Helpers
+@model CRM.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>جزئیات</h1>
+
+<div>
+    <h4>کاربر</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            نام
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt class="col-sm-2">
+            نام خانوادگی
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Surname)
+        </dd>
+
+        <dt class="col-sm-2">
+            تاریخ تولد
+        </dt>
+        <dd class="col-sm-10">
+            @Model.DateOfBirth.ToPersianDate()
+        </dd>
+
+        <dt class="col-sm-2">
+            نام کاربری
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Login)
+        </dd>
+
+        @* در صورت نیاز نمایش رمز عبور برای ادمین یا مدیر فعال شود *@
+        @*
+        @if (User.FindFirst("role").Value == "Admin" || (User.FindFirst("role").Value == "Moderator" && Model.RoleId == "3"))
+        {
+            <dt class="col-sm-2">
+                رمز عبور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Password)
+            </dd>
+        }
+        *@
+
+        <dt class="col-sm-2">
+            نقش
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-controller="Roles" asp-action="Details" asp-route-id="@Model.RoleId">
+                @Html.DisplayFor(model => model.RoleId) - @ViewBag.roles[Convert.ToInt32(Model.RoleId) - 1]
+            </a>
+        </dd>
+    </dl>
+</div>
+
+<div>
+    @if (User.FindFirst("role").Value == "Admin" || User.FindFirst("role").Value == "Moderator")
+    {
+        <a asp-action="Edit" class="btn btn-primary" asp-route-id="@Model.Id">ویرایش</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">بازگشت به لیست کاربران</a>
+</div>

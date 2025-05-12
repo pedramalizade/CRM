@@ -1,0 +1,171 @@
+﻿@model ReflectionIT.Mvc.Paging.PagingList<CRM.Models.Company>
+@using CRM.Helpers
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    ul {
+        -webkit-column-count: 4;
+        -moz-column-count: 4;
+        column-count: 4;
+    }
+</style>
+
+<h1>شرکت‌ها</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">ایجاد شرکت جدید</a>
+    <a asp-action="Index" class="btn btn-danger">پاک کردن فیلترها</a>
+</p>
+
+<form method="get" class="form-inline">
+    <br />
+    <label>از تاریخ:</label>
+    <input value="@ViewBag.start" type="text" class="form-control persian-datepicker me-1" id="start" name="start" placeholder="1404/02/18" />
+    <label>تا تاریخ:</label>
+    <input value="@ViewBag.end" type="text" class="form-control persian-datepicker me-1" id="end" name="end" placeholder="1404/02/18" />
+    <ul>
+        @foreach (var business in ((Dictionary<int, string>)ViewBag.data).OrderBy(kvp => kvp.Key))
+        {
+            if (business.Value != null)
+            {
+                <li>
+                    <label>
+                        <input type="checkbox" name="selected" value="@business.Key"
+                        @(ViewBag.selected != null && ((int[])ViewBag.selected).Contains(business.Key) ? "checked" : "") />
+                        <span>@business.Value</span>
+                    </label>
+                </li>
+            }
+        }
+    </ul>
+    <button type="submit" class="btn btn-info ms-2">
+        <i class="bi bi-search"></i> جستجو
+    </button>
+</form>
+
+<br />
+<nav>
+    @await this.Component.InvokeAsync("Pager", new { pagingList = this.Model })
+</nav>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th width="10%">
+                @Html.SortableHeaderFor(model => model.Name)
+            </th>
+            <th width="10%">
+                @Html.SortableHeaderFor(model => model.NIP)
+            </th>
+            <th width="11%">
+                @Html.SortableHeaderFor(model => model.BusinessId)
+            </th>
+            <th width="11%">
+                @Html.SortableHeaderFor(model => model.Address)
+            </th>
+            <th width="11%">
+                @Html.SortableHeaderFor(model => model.City)
+            </th>
+            <th width="11%">
+                @Html.SortableHeaderFor(model => model.UserId)
+            </th>
+            <th width="11%">
+                @Html.SortableHeaderFor(model => model.CreationDate)
+            </th>
+            <th width="25%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NIP)
+                </td>
+                <td>
+                    <a asp-controller="Business" asp-action="Details" asp-route-id="@item.BusinessId">
+                        @Html.DisplayFor(modelItem => item.BusinessId) @ViewBag.data[Convert.ToInt32(item.BusinessId)]
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td>
+                    @if (item.UserId != ViewBag.userId)
+                    {
+                        <a asp-controller="Users" asp-action="Details" asp-route-id="@item.UserId">
+                            @Html.DisplayFor(modelItem => item.UserId) @ViewBag.data2[Convert.ToInt32(item.UserId)]
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Accounts" asp-action="Details">
+                            @Html.DisplayFor(modelItem => item.UserId) @ViewBag.data2[Convert.ToInt32(item.UserId)]
+                        </a>
+                    }
+                </td>
+                <td>
+                    @item.CreationDate.ToPersianDate()
+                </td>
+                <td>
+                    <a asp-controller="Notes" asp-action="Create" asp-route-com="@item.Id" class="btn btn-primary mb-1">افزودن یادداشت</a>
+                    <a asp-controller="Contacts" asp-action="Create" asp-route-com="@item.Id" class="btn btn-primary mb-1">افزودن تماس</a>
+                    <br />
+                    @if (item.UserId == ViewBag.userId)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">ویرایش</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">جزئیات</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">حذف</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">جزئیات</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // تنظیم تقویم برای start
+            $("#start").persianDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                initialValue: true,
+                maxDate: new Date(),
+                onSelect: function (unix) {
+                    $("#end").persianDatepicker("option", "minDate", unix);
+                }
+            });
+
+            // تنظیم تقویم برای end
+            var startDate = "@ViewBag.start";
+            var minDate = null;
+            if (startDate && @Html.Raw(Json.Serialize(PersianDateHelper.IsValidPersianDate(ViewBag.start)))) {
+                minDate = new Date(@Html.Raw(Json.Serialize(PersianDateHelper.ToGregorianDate(ViewBag.start))));
+            }
+            $("#end").persianDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                initialValue: true,
+                maxDate: new Date(),
+                minDate: minDate
+            });
+        });
+    </script>
+}

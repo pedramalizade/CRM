@@ -1,12 +1,12 @@
-@using CRM.Helpers
+﻿@using CRM.Helpers
 @model CRM.Models.User
 
 @{ ViewData["Title"] = "Delete"; }
-<h1>???</h1>
+<h1>حذف</h1>
 
-<h3>??? ?? ??? ???? ?????? ??? ????? ??????</h3>
+<h3>حذف</h3>
 <div>
-    <h4>???? ??</h4>
+    <h4>حذف</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -49,8 +49,8 @@
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="???" class="btn btn-danger" />
-        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">?????? ?? ????</a>
+        <input type="submit" value="حذف" class="btn btn-danger" />
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">حذف</a>
     </form>
 </div>
 

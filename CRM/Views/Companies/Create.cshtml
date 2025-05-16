@@ -1,8 +1,11 @@
 ﻿@using CRM.Helpers
+@using CRM.Models
 @model CRM.Models.Company
 
 @{
     ViewData["Title"] = "Create";
+    var businesses = ViewBag.data as Dictionary<int, string>;
+    var firstBusinessName = businesses != null && businesses.Any() ? businesses.First().Value : "";
 }
 <h1>ایجاد</h1>
 
@@ -23,14 +26,8 @@
                 <span asp-validation-for="NIP" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BusinessId" class="control-label"></label>
-                @*<input asp-for="Company.BusinessId" class="form-control" />*@
-                <select asp-for="BusinessId" class="form-control">
-                    @foreach (var item in ViewBag.data)
-                    {
-                        <option value="@Convert.ToUInt32(item.Id)">@item.Name</option>
-                    }
-                </select>
+                <label asp-for="BusinessId" class="control-label">نوع کسب و کار</label>
+                <input class="form-control" value="@firstBusinessName"  />
                 <span asp-validation-for="BusinessId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -50,7 +47,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="CreationDate" class="control-label"></label>
-                <input asp-for="CreationDate" class="form-control" value="@DateTime.Today.ToPersianDate()" readonly />
+                <input asp-for="CreationDate" class="form-control" value="@DateTime.Today.ToPersianDate()"  />
                 <span asp-validation-for="CreationDate" class="text-danger"></span>
             </div>
             <div class="form-group">

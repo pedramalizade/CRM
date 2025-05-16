@@ -1,4 +1,4 @@
-@model IEnumerable<CRM.Models.User>
+﻿@model IEnumerable<CRM.Models.User>
 
 @{ ViewData["Title"] = "Index"; }
 
@@ -6,7 +6,7 @@
 @if (User.FindFirst("role").Value == "Admin" || User.FindFirst("role").Value == "Moderator")
 {
 <p>
-        <a asp-action="Create">????? ???? ????</a>
+        <a asp-action="Create">ایجاد کاربر</a>
 </p>
 }
 <table class="table">
@@ -59,9 +59,9 @@
                     @Html.DisplayFor(modelItem => item.RoleId)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">??????</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">??????</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">???</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">ویرایش</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">جزعیات</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">حذف</a>
                 </td>
             </tr>
         }

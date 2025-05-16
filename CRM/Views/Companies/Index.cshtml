@@ -93,7 +93,8 @@
                 </td>
                 <td>
                     <a asp-controller="Business" asp-action="Details" asp-route-id="@item.BusinessId">
-                        @Html.DisplayFor(modelItem => item.BusinessId) @ViewBag.data[Convert.ToInt32(item.BusinessId)]
+                        @Html.DisplayFor(modelItem => item.BusinessId)
+                        @(((Dictionary<int, string>)ViewBag.data).ContainsKey(item.BusinessId) ? ViewBag.data[item.BusinessId] : "نامشخص")
                     </a>
                 </td>
                 <td>
@@ -106,13 +107,15 @@
                     @if (item.UserId != ViewBag.userId)
                     {
                         <a asp-controller="Users" asp-action="Details" asp-route-id="@item.UserId">
-                            @Html.DisplayFor(modelItem => item.UserId) @ViewBag.data2[Convert.ToInt32(item.UserId)]
+                            @Html.DisplayFor(modelItem => item.UserId)
+                            @(((Dictionary<int, string>)ViewBag.data2).ContainsKey(item.UserId) ? ViewBag.data2[item.UserId] : "نامشخص")
                         </a>
                     }
                     else
                     {
                         <a asp-controller="Accounts" asp-action="Details">
-                            @Html.DisplayFor(modelItem => item.UserId) @ViewBag.data2[Convert.ToInt32(item.UserId)]
+                            @Html.DisplayFor(modelItem => item.UserId)
+                            @(((Dictionary<int, string>)ViewBag.data2).ContainsKey(item.UserId) ? ViewBag.data2[item.UserId] : "نامشخص")
                         </a>
                     }
                 </td>

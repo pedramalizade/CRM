@@ -29,7 +29,6 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string start, string end, string category, int[] selected, int page = 1, string sortExpression = "Id")
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -46,7 +45,6 @@ namespace CRM.Controllers
                 .Where(p => p.IsDeleted == 0)
                 .AsQueryable();
 
-            // تبدیل تاریخ‌های ورودی شمسی به میلادی
             DateTime? startDate = null;
             DateTime? endDate = null;
 
@@ -59,12 +57,10 @@ namespace CRM.Controllers
                 endDate = PersianDateHelper.ToGregorianDate(end);
             }
 
-            // ذخیره تاریخ‌های شمسی برای نمایش در View
             ViewBag.start = start;
             ViewBag.end = end;
             ViewBag.userId = user.Id;
 
-            // اعمال فیلتر تاریخ
             if (startDate != null)
             {
                 qry = qry.Where(m => m.CreationDate >= startDate);
@@ -74,14 +70,12 @@ namespace CRM.Controllers
                 qry = qry.Where(m => m.CreationDate <= endDate);
             }
 
-            // اعمال فیلتر selected
             ViewBag.selected = selected.Length > 0 ? selected : null;
             if (selected.Length > 0)
             {
                 qry = qry.Where(p => selected.Contains(p.BusinessId));
             }
 
-            // مرتب‌سازی
             if (!string.IsNullOrEmpty(sortExpression))
             {
                 qry = qry.OrderBy(sortExpression);
@@ -91,7 +85,6 @@ namespace CRM.Controllers
                 qry = qry.OrderBy(p => p.Id);
             }
 
-            // صفحه‌بندی
             var model = await PagingList.CreateAsync(qry, 3, page, sortExpression, "Id");
             model.RouteValue = new RouteValueDictionary
             {
@@ -100,11 +93,9 @@ namespace CRM.Controllers
                 { "end", end }
             };
 
-            // تنظیم ViewBag.data برای Business
             var businesses = _context.Business.ToDictionary(b => b.Id, b => b.Name);
             ViewBag.data = businesses;
 
-            // تنظیم ViewBag.data2 برای User
             var users = _context.User.ToDictionary(u => u.Id, u => u.Name);
             ViewBag.data2 = users;
 
@@ -115,7 +106,6 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -142,11 +132,9 @@ namespace CRM.Controllers
             ViewBag.userId = user.Id;
             ViewBag.message = user.Id;
 
-            // تنظیم ViewBag.data برای Business
             var businesses = _context.Business.ToDictionary(b => b.Id, b => b.Name);
             ViewBag.data = businesses;
 
-            // تنظیم ViewBag.data2 برای User
             var users = _context.User.ToDictionary(u => u.Id, u => u.Name);
             ViewBag.data2 = users;
 
@@ -157,7 +145,6 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Create()
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -171,16 +158,16 @@ namespace CRM.Controllers
             }
 
             ViewBag.message = user.Id;
-            ViewBag.data = await _context.Business.ToListAsync();
+            var businesses = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
+            ViewBag.data = businesses;
             return View();
         }
 
         // POST: Companies/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Company company)
+        public async Task<IActionResult> Create([Bind("Name,NIP,Address,City,UserId,CreationDate")] Company company)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -192,7 +179,6 @@ namespace CRM.Controllers
             {
                 return RedirectToAction("Login", "Accounts");
             }
-
             if (ModelState.IsValid)
             {
                 try
@@ -212,8 +198,38 @@ namespace CRM.Controllers
                     return View(company);
                 }
             }
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
+            //        var firstBusiness = await _context.Business.FirstOrDefaultAsync();
+            //        if (firstBusiness == null)
+            //        {
+            //            ModelState.AddModelError("", "هیچ بیزنسی برای انتساب وجود ندارد.");
+            //            ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
+            //            ViewBag.message = user.Id;
+            //            return View(company);
+            //        }
 
-            ViewBag.data = await _context.Business.ToListAsync();
+            //        company.BusinessId = firstBusiness.Id;
+            //        company.IsDeleted = 0;
+            //        company.CreationDate = DateTime.Now;
+            //        company.UserId = user.Id;
+
+            //        _context.Add(company);
+            //        await _context.SaveChangesAsync();
+            //        return RedirectToAction(nameof(Index));
+            //    }
+            //    catch (DbUpdateException)
+            //    {
+            //        ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
+            //        ViewBag.message = user.Id;
+            //        ModelState.AddModelError("", "NIP Is Taken");
+            //        return View(company);
+            //    }
+            //}
+
+            ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
             ViewBag.message = user.Id;
             return View(company);
         }
@@ -222,7 +238,6 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -246,16 +261,15 @@ namespace CRM.Controllers
                 return NotFound();
             }
 
-            ViewBag.data = await _context.Business.ToListAsync();
+            ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
             return View(company);
         }
 
         // POST: Companies/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,NIP,Address,City,UserId,CreationDate,BusinessId")] Company company)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -285,10 +299,9 @@ namespace CRM.Controllers
 
                     existingCompany.Name = company.Name;
                     existingCompany.NIP = company.NIP;
-                    existingCompany.BusinessId = company.BusinessId;
                     existingCompany.Address = company.Address;
                     existingCompany.City = company.City;
-                    // CreationDate و UserId تغییر نمی‌کنن
+                    // BusinessId, CreationDate و UserId تغییر نمی‌کنند
 
                     _context.Update(existingCompany);
                     await _context.SaveChangesAsync();
@@ -304,13 +317,13 @@ namespace CRM.Controllers
                 }
                 catch (DbUpdateException)
                 {
-                    ViewBag.data = await _context.Business.ToListAsync();
+                    ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
                     ModelState.AddModelError("", "NIP is taken");
                     return View(company);
                 }
             }
 
-            ViewBag.data = await _context.Business.ToListAsync();
+            ViewBag.data = await _context.Business.ToDictionaryAsync(b => b.Id, b => b.Name);
             return View(company);
         }
 
@@ -318,7 +331,6 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
@@ -344,11 +356,9 @@ namespace CRM.Controllers
 
             ViewBag.userId = user.Id;
 
-            // تنظیم ViewBag.data برای Business
             var businesses = _context.Business.ToDictionary(b => b.Id, b => b.Name);
             ViewBag.data = businesses;
 
-            // تنظیم ViewBag.data2 برای User
             var users = _context.User.ToDictionary(u => u.Id, u => u.Name);
             ViewBag.data2 = users;
 
@@ -360,7 +370,6 @@ namespace CRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // چک کردن کاربر لاگین‌شده
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {

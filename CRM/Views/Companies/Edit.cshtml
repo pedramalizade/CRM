@@ -2,6 +2,15 @@
 
 @{
     ViewData["Title"] = "Edit";
+    var businesses = ViewBag.data as Dictionary<int, string>;
+    string businessName = "کسب‌وکار نامشخص";
+    if (businesses != null)
+    {
+        if (businesses.TryGetValue(Model.BusinessId, out string name))
+        {
+            businessName = name;
+        }
+    }
 }
 <h1>ویرایش</h1>
 
@@ -23,13 +32,9 @@
                 <span asp-validation-for="NIP" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BusinessId" class="control-label"></label>
-                <select asp-for="BusinessId" class="form-control">
-                    @foreach (var item in ViewBag.data)
-                    {
-                        <option value="@Convert.ToUInt32(item.Id)">@item.Name</option>
-                    }
-                </select>
+                <label asp-for="BusinessId" class="control-label">نوع کسب و کار</label>
+                <input class="form-control" value="@businessName"  />
+                <input type="hidden" asp-for="BusinessId" />
                 <span asp-validation-for="BusinessId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -56,7 +61,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" class="btn btn-secondary">بازگشت به لیست</a>
+    <a class="btn btn-secondary" asp-action="Index">بازگشت به لیست</a>
 </div>
 
 @section Scripts {

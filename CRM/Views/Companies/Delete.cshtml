@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Delete";
 }
+
 <h1>حذف</h1>
 
 <h3>آیا از حذف این مورد مطمئن هستید؟</h3>
@@ -26,7 +27,16 @@
             @Html.DisplayNameFor(model => model.BusinessId)
         </dt>
         <dd class="col-sm-10">
-            <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.BusinessId">@Html.DisplayFor(model => model.BusinessId) @ViewBag.data[Convert.ToInt32(Model.BusinessId)]</a>
+            @if (Model.BusinessId != null && ViewBag.data != null && ViewBag.data.ContainsKey(Convert.ToInt32(Model.BusinessId)))
+            {
+                <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.BusinessId">
+                    @Html.DisplayFor(model => model.BusinessId) @ViewBag.data[Convert.ToInt32(Model.BusinessId)]
+                </a>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.BusinessId) <span>(داده‌ای موجود نیست)</span>
+            }
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Address)
@@ -44,13 +54,24 @@
             @Html.DisplayNameFor(model => model.UserId)
         </dt>
         <dd class="col-sm-10">
-            @if (Model.UserId != ViewBag.UserId)
+            @if (Model.UserId != null && ViewBag.data2 != null && ViewBag.data2.ContainsKey(Convert.ToInt32(Model.UserId)))
             {
-                <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.UserId">@Html.DisplayFor(model => model.UserId) @ViewBag.data2[Convert.ToInt32(Model.UserId)]</a>
+                if (Model.UserId != ViewBag.UserId)
+                {
+                    <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.UserId">
+                        @Html.DisplayFor(model => model.UserId) @ViewBag.data2[Convert.ToInt32(Model.UserId)]
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Accounts" asp-action="Details">
+                        @Html.DisplayFor(model => model.UserId) @ViewBag.data2[Convert.ToInt32(Model.UserId)]
+                    </a>
+                }
             }
             else
             {
-                <a asp-controller="Accounts" asp-action="Details">@Html.DisplayFor(model => model.UserId) @ViewBag.data2[Convert.ToInt32(Model.UserId)]</a>
+                @Html.DisplayFor(model => model.UserId) <span>(داده‌ای موجود نیست)</span>
             }
         </dd>
     </dl>

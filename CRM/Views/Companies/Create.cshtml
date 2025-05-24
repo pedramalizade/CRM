@@ -1,4 +1,4 @@
-﻿@using CRM.Helpers
+﻿@* @using CRM.Helpers
 @using CRM.Models
 @model CRM.Models.Company
 
@@ -59,6 +59,60 @@
 
 <div>
     <a asp-action="Index" class="btn btn-secondary">بازگشت به لیست</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@
+
+                @model CRM.Models.Company
+
+@{
+    ViewData["Title"] = "ایجاد شرکت جدید";
+}
+
+<h1>ایجاد شرکت جدید</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" dir="rtl">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-right">
+                <label asp-for="Name" class="control-label">نام شرکت</label>
+                <input asp-for="Name" class="form-control" placeholder="نام شرکت را وارد کنید" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="NIP" class="control-label">کد NIP</label>
+                <input asp-for="NIP" class="form-control" placeholder="کد NIP را وارد کنید" />
+                <span asp-validation-for="NIP" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="Address" class="control-label">آدرس</label>
+                <input asp-for="Address" class="form-control" placeholder="آدرس را وارد کنید" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="City" class="control-label">شهر</label>
+                <input asp-for="City" class="form-control" placeholder="شهر را وارد کنید" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="BusinessId" class="control-label">کسب‌وکار</label>
+                <select asp-for="BusinessId" class="form-control" asp-items="@(new SelectList(ViewBag.data, "Key", "Value"))">
+                    <option value="">لطفاً کسب‌وکار را انتخاب کنید</option>
+                </select>
+                <span asp-validation-for="BusinessId" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <input type="submit" value="ایجاد" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">بازگشت</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

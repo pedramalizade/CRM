@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,11 +10,12 @@ using CRM.Models;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using CRM.Helpers;
 
 namespace CRM.Controllers
 {
@@ -63,7 +64,6 @@ namespace CRM.Controllers
                 return false;
             }
 
-            // ?????? ??? ???? ??????
             string hashedPassword = HashPassword(password);
             return hashedPassword == user.Password;
         }
@@ -107,17 +107,18 @@ namespace CRM.Controllers
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
-                    return RedirectToAction("Index", "Companies"); // ????? ?? Companies
+                    return RedirectToAction("Index", "Companies");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid Login or Password");
+                    ModelState.AddModelError("", "نام کاربری یا رمز عبور نامعتبر است");
                     return View(model);
                 }
             }
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult Register()
         {
             return View();
@@ -125,16 +126,31 @@ namespace CRM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register(User user, string DateOfBirth)
         {
             try
             {
                 var existingUser = await _context.User.FirstOrDefaultAsync(m => m.Login == user.Login);
                 if (existingUser != null)
                 {
-                    ModelState.AddModelError("", "Login is taken");
+                    ModelState.AddModelError("", "نام کاربری قبلاً استفاده شده است");
                     return View(user);
                 }
+
+                if (!PersianDateHelper.IsValidPersianDate(DateOfBirth))
+                {
+                    ModelState.AddModelError("DateOfBirth", "تاریخ شمسی نامعتبر است");
+                    return View(user);
+                }
+
+                var gregorianDate = PersianDateHelper.ToGregorianDate(DateOfBirth);
+                if (gregorianDate == null)
+                {
+                    ModelState.AddModelError("DateOfBirth", "تبدیل تاریخ شمسی به میلادی ممکن نیست");
+                    return View(user);
+                }
+
+                user.DateOfBirth = gregorianDate.Value;
 
                 if (ModelState.IsValid)
                 {
@@ -148,7 +164,7 @@ namespace CRM.Controllers
             }
             catch (Exception)
             {
-                ModelState.AddModelError("", "An error occurred during registration.");
+                ModelState.AddModelError("", "خطایی در فرآیند ثبت‌نام رخ داد");
                 return View(user);
             }
         }
@@ -174,7 +190,7 @@ namespace CRM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(int id, User user, string DateOfBirth)
         {
             if (id != user.Id)
             {
@@ -187,8 +203,25 @@ namespace CRM.Controllers
             try
             {
                 int loginStatus = await LoginUnChangedAsync(id, user.Login);
-                if (loginStatus < 3) // Login ????? ????? ?? ??????
+                if (loginStatus < 3)
                 {
+                    if (!string.IsNullOrEmpty(DateOfBirth))
+                    {
+                        if (!PersianDateHelper.IsValidPersianDate(DateOfBirth))
+                        {
+                            ModelState.AddModelError("DateOfBirth", "تاریخ شمسی نامعتبر است");
+                            return View(user);
+                        }
+
+                        var gregorianDate = PersianDateHelper.ToGregorianDate(DateOfBirth);
+                        if (gregorianDate == null)
+                        {
+                            ModelState.AddModelError("DateOfBirth", "تبدیل تاریخ شمسی به میلادی ممکن نیست");
+                            return View(user);
+                        }
+                        user.DateOfBirth = gregorianDate.Value;
+                    }
+
                     if (ModelState.IsValid)
                     {
                         if (adminCount > 2 || user.RoleId == 1)
@@ -221,7 +254,7 @@ namespace CRM.Controllers
                         }
                         else
                         {
-                            ViewBag.Message = "You cannot delete more admins! There must be at least 2 of them!";
+                            ViewBag.Message = "نمی‌توانید مدیران بیشتری حذف کنید! حداقل باید ۲ مدیر وجود داشته باشد!";
                             return View(user);
                         }
                     }
@@ -229,13 +262,13 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Login is taken");
+                    ModelState.AddModelError("", "نام کاربری قبلاً استفاده شده است");
                     return View(user);
                 }
             }
             catch (Exception)
             {
-                ModelState.AddModelError("", "Invalid data");
+                ModelState.AddModelError("", "داده‌های نامعتبر");
                 return View(user);
             }
         }
@@ -288,7 +321,7 @@ namespace CRM.Controllers
             }
             else
             {
-                ViewBag.Message = "You cannot delete more admins! There must be at least 2 of them!";
+                ViewBag.Message = "نمی‌توانید مدیران بیشتری حذف کنید! حداقل باید ۲ مدیر وجود داشته باشد!";
                 return View(user);
             }
         }
@@ -321,15 +354,15 @@ namespace CRM.Controllers
             var currentUserClaim = User.FindFirst("user");
             if (currentUserClaim != null && login == currentUserClaim.Value)
             {
-                return 1; // Login ???? ?????
+                return 1; // Login بدون تغییر
             }
 
             var user = await _context.User.FirstOrDefaultAsync(m => m.Login == login && m.IsDeleted == 0);
             if (user == null)
             {
-                return 2; // Login ???? ? ?????
+                return 2; // Login جدید و آزاد
             }
-            return 3; // Login ????? ??????? ???
+            return 3; // Login قبلاً استفاده شده
         }
     }
 }

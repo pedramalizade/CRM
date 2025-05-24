@@ -1,4 +1,4 @@
-﻿@using CRM.Helpers
+﻿@* @using CRM.Helpers
 @model CRM.Models.User
 
 @{
@@ -86,6 +86,88 @@
                 initialValue: true,
                 minDate: new Date(1910, 0, 1), // معادل 1288 شمسی
                 maxDate: new Date() // محدود به امروز
+            });
+        });
+    </script>
+} *@
+@using CRM.Helpers
+@model CRM.Models.User
+
+@{
+    ViewData["Title"] = "ایجاد کاربر جدید";
+}
+
+<h1>ایجاد کاربر جدید</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" dir="rtl">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-right">
+                <label asp-for="Name" class="control-label">نام</label>
+                <input asp-for="Name" class="form-control" placeholder="نام خود را وارد کنید" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="Surname" class="control-label">نام خانوادگی</label>
+                <input asp-for="Surname" class="form-control" placeholder="نام خانوادگی خود را وارد کنید" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="DateOfBirth" class="control-label">تاریخ تولد</label>
+                <input type="text" name="DateOfBirth" class="form-control persian-datepicker" placeholder="1404/02/18" readonly />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="Login" class="control-label">نام کاربری</label>
+                <input asp-for="Login" class="form-control" placeholder="نام کاربری خود را وارد کنید" />
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="Password" class="control-label">رمز عبور</label>
+                <input asp-for="Password" class="form-control" type="password" placeholder="رمز عبور خود را وارد کنید" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <label asp-for="RoleId" class="control-label">نقش</label>
+                <select asp-for="RoleId" class="form-control" asp-items="@(new SelectList(ViewBag.Roles, "Id", "Name"))">
+                    <option value="">لطفاً نقش را انتخاب کنید</option>
+                </select>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div>
+            <div class="form-group text-right">
+                <input type="submit" value="ایجاد" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">بازگشت</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".persian-datepicker").persianDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                initialValue: false,
+                calendar: {
+                    persian: {
+                        locale: "fa",
+                        showHint: true
+                    }
+                },
+                toolbox: {
+                    enabled: true,
+                    calendarSwitch: { enabled: false }
+                },
+                minDate: new persianDate([1300, 1, 1]).valueOf(),
+                maxDate: new persianDate([1500, 12, 29]).valueOf()
             });
         });
     </script>

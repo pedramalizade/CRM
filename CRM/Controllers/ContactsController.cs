@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CRM.Data;
 using CRM.Models;
@@ -24,14 +23,14 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string filter)
         {
-            // ?? ???? ????? ?????????
+            // بررسی احراز هویت کاربر
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -39,20 +38,8 @@ namespace CRM.Controllers
 
             ViewBag.userId = user.Id;
 
-            // ????? ViewBag.data ???? Company
-            var companies = _context.Company
-                .Where(c => c.IsDeleted == 0)
-                .ToDictionary(c => c.Id, c => c.Name);
-            ViewBag.data = companies;
-
-            // ????? ViewBag.data2 ???? User
-            var users = _context.User
-                .Where(u => u.IsDeleted == 0)
-                .ToDictionary(u => u.Id, u => u.Login);
-            ViewBag.data2 = users;
-
-            // ????? ???? Contacts
-            var qry = _context.Contact
+            // دریافت تماس‌ها
+            var query = _context.Contact
                 .AsNoTracking()
                 .Where(c => c.IsDeleted == 0)
                 .OrderBy(p => p.Id)
@@ -60,26 +47,38 @@ namespace CRM.Controllers
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                qry = qry.Where(p => p.Surname.Contains(filter));
+                query = query.Where(p => p.Surname.Contains(filter));
             }
 
-            var model = await qry.ToListAsync();
+            var contacts = await query.ToListAsync();
+
+            // مقداردهی ViewBag.data برای شرکت‌ها
+            var companyIds = contacts.Select(c => c.CompanyId).Distinct().ToList();
+            ViewBag.data = await _context.Company
+                .Where(c => companyIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Name ?? "نامشخص");
+
+            // مقداردهی ViewBag.data2 برای کاربران
+            var userIds = contacts.Select(c => c.UserId).Distinct().ToList();
+            ViewBag.data2 = await _context.User
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => $"{u.Name} {u.Surname}" ?? "نامشخص");
+
             ViewBag.filter = filter;
-            return View(model);
+            return View(contacts);
         }
 
         // GET: Contacts/Details/5
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -100,17 +99,15 @@ namespace CRM.Controllers
 
             ViewBag.userId = user.Id;
 
-            // ????? ViewBag.data ???? Company
-            var companies = _context.Company
-                .Where(c => c.IsDeleted == 0)
-                .ToDictionary(c => c.Id, c => c.Name);
-            ViewBag.data = companies;
+            // مقداردهی ViewBag.data برای شرکت‌ها
+            ViewBag.data = await _context.Company
+                .Where(c => c.Id == contact.CompanyId)
+                .ToDictionaryAsync(c => c.Id, c => c.Name ?? "نامشخص");
 
-            // ????? ViewBag.data2 ???? User
-            var users = _context.User
-                .Where(u => u.IsDeleted == 0)
-                .ToDictionary(u => u.Id, u => u.Login);
-            ViewBag.data2 = users;
+            // مقداردهی ViewBag.data2 برای کاربران
+            ViewBag.data2 = await _context.User
+                .Where(u => u.Id == contact.UserId)
+                .ToDictionaryAsync(u => u.Id, u => $"{u.Name} {u.Surname}" ?? "نامشخص");
 
             return View(contact);
         }
@@ -119,14 +116,13 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Create(int? com)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -154,14 +150,13 @@ namespace CRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Contact contact)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -170,7 +165,7 @@ namespace CRM.Controllers
             if (ModelState.IsValid)
             {
                 contact.IsDeleted = 0;
-                contact.UserId = user.Id; // ????? ?????? UserId
+                contact.UserId = user.Id;
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -196,14 +191,13 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -233,14 +227,13 @@ namespace CRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Contact contact)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -265,10 +258,11 @@ namespace CRM.Controllers
 
                     existingContact.Name = contact.Name;
                     existingContact.Surname = contact.Surname;
-                    //existingContact.PhoneNumber = contact.PhoneNumber;
-                    //existingContact.EmailAddress = contact.EmailAddress;
+                    existingContact.Phone = contact.Phone;
+                    existingContact.Email = contact.Email;
+                    existingContact.Position = contact.Position;
                     existingContact.CompanyId = contact.CompanyId;
-                    // UserId ? IsDeleted ????? ???????
+                    // UserId و IsDeleted تغییر نمی‌کنند
 
                     _context.Update(existingContact);
                     await _context.SaveChangesAsync();
@@ -294,14 +288,13 @@ namespace CRM.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");
@@ -322,17 +315,13 @@ namespace CRM.Controllers
 
             ViewBag.userId = user.Id;
 
-            // ????? ViewBag.data ???? Company
-            var companies = _context.Company
-                .Where(c => c.IsDeleted == 0)
-                .ToDictionary(c => c.Id, c => c.Name);
-            ViewBag.data = companies;
+            ViewBag.data = await _context.Company
+                .Where(c => c.Id == contact.CompanyId)
+                .ToDictionaryAsync(c => c.Id, c => c.Name ?? "نامشخص");
 
-            // ????? ViewBag.data2 ???? User
-            var users = _context.User
-                .Where(u => u.IsDeleted == 0)
-                .ToDictionary(u => u.Id, u => u.Login);
-            ViewBag.data2 = users;
+            ViewBag.data2 = await _context.User
+                .Where(u => u.Id == contact.UserId)
+                .ToDictionaryAsync(u => u.Id, u => $"{u.Name} {u.Surname}" ?? "نامشخص");
 
             return View(contact);
         }
@@ -342,14 +331,13 @@ namespace CRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // ?? ???? ????? ?????????
             var userClaim = User.FindFirst("user");
             if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Login == userClaim.Value && m.IsDeleted == 0);
             if (user == null)
             {
                 return RedirectToAction("Login", "Accounts");

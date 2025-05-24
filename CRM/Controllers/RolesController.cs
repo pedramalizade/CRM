@@ -50,28 +50,28 @@ namespace CRM.Controllers
             return View(user);
         }
 
-        //// GET: Roles/Create
-        //[Authorize]
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+        // GET: Roles/Create
+        [Authorize]
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        //// POST: Roles/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        //// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Name")] Role role)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(role);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(role);
-        //}
+        // POST: Roles/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name")] Role role)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(role);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(role);
+        }
 
         //// GET: Roles/Edit/5
         //[Authorize]

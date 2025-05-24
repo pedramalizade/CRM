@@ -2,52 +2,53 @@
 @model CRM.Models.User
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "ثبت نام";
 }
+
 <h1>ثبت نام</h1>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Register">
+        <form asp-action="Register" dir="rtl">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+            <div class="form-group text-right">
+                <label asp-for="Name" class="control-label">نام</label>
+                <input asp-for="Name" class="form-control" placeholder="نام خود را وارد کنید" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Surname" class="control-label"></label>
-                <input asp-for="Surname" class="form-control" />
+            <div class="form-group text-right">
+                <label asp-for="Surname" class="control-label">نام خانوادگی</label>
+                <input asp-for="Surname" class="form-control" placeholder="نام خانوادگی خود را وارد کنید" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DateOfBirth" class="control-label"></label>
-                <input type="text" name="DateOfBirth" value="@Model?.DateOfBirth.ToPersianDate()" class="form-control persian-datepicker" placeholder="1404/02/18" />
+            <div class="form-group text-right">
+                <label asp-for="DateOfBirth" class="control-label">تاریخ تولد</label>
+                <input type="text" name="DateOfBirth" value="@(Model?.DateOfBirth.ToPersianDate() ?? "")" class="form-control persian-datepicker" placeholder="1404/02/18" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Login" class="control-label"></label>
-                <input asp-for="Login" class="form-control" />
+            <div class="form-group text-right">
+                <label asp-for="Login" class="control-label">نام کاربری</label>
+                <input asp-for="Login" class="form-control" placeholder="نام کاربری خود را وارد کنید" />
                 <span asp-validation-for="Login" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+            <div class="form-group text-right">
+                <label asp-for="Password" class="control-label">رمز عبور</label>
+                <input asp-for="Password" class="form-control" type="password" placeholder="رمز عبور خود را وارد کنید" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="hidden" asp-for="RoleId" class="form-control" value="3" />
+                <input type="hidden" asp-for="RoleId" value="3" />
                 <span asp-validation-for="RoleId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group text-right">
                 <input type="submit" value="ثبت نام" class="btn btn-success" />
             </div>
         </form>
     </div>
 </div>
 
-<div class="">
+<div class="text-right">
     <a asp-action="Login" class="btn btn-secondary">بازگشت به ورود</a>
 </div>
 
@@ -55,4 +56,39 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".persian-datepicker").persianDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                initialValue: false,
+                calendar: {
+                    persian: {
+                        locale: "fa",
+                        showHint: true
+                    }
+                },
+                toolbox: {
+                    enabled: true,
+                    calendarSwitch: {
+                        enabled: false // غیرفعال کردن امکان تغییر به تقویم میلادی
+                    }
+                },
+                observer: true,
+                altField: '#DateOfBirth', // فیلد مخفی برای هماهنگی با مدل
+                altFormat: "YYYY/MM/DD",
+                minDate: new persianDate([1300, 1, 1]).valueOf(), // حداقل تاریخ: 1300/01/01
+                maxDate: new persianDate([1500, 12, 29]).valueOf(), // حداکثر تاریخ: 1500/12/29
+                onSelect: function (unix) {
+                    var selectedDate = $(this).val();
+                    // اعتبارسنجی سمت کلاینت (اختیاری)
+                    if (selectedDate) {
+                        // می‌توانید با AJAX تاریخ را به سرور بفرستید و با PersianDateHelper اعتبارسنجی کنید
+                    }
+                }
+            });
+        });
+    </script>
 }

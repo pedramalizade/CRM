@@ -1,5 +1,5 @@
 ﻿using System;
-namespace CRM.Models
+namespace CRM.Domain.Entities
 {
     public class Role
     {

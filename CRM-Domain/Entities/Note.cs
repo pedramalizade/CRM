@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CRM.Models
+namespace CRM.Domain.Entities
 {
     public class Note
     {

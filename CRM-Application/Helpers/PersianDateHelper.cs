@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System;
 
-namespace CRM.Helpers
+namespace CRM.Application.Helpers
 {
     public static class PersianDateHelper
     {

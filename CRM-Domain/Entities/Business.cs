@@ -1,7 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CRM.Models
+namespace CRM.Domain.Entities
 {
     public class Business
     {

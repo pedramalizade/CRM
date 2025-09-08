@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Data\" />
 		<Folder Include="Views\Shared\Components\" />
 		<Folder Include="Views\Shared\Components\Pager\" />
 	</ItemGroup>

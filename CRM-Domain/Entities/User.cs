@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CRM.Models
+namespace CRM.Domain.Entities
 {
 
     public class User
@@ -36,15 +34,4 @@ namespace CRM.Models
         public int IsDeleted { get; set; }
 
     }
-    //public class CustomDateRangeAttribute : RangeAttribute
-    //{
-    //    public CustomDateRangeAttribute() : base(typeof(DateTime), DateTime.Now.ToString(), DateTime.Now.AddYears(20).ToString())
-    //    { }
-    //}
-    //public class DateAttribute : RangeAttribute
-    //{
-    //    public DateAttribute()
-    //      : base(typeof(DateTime), DateTime.Now.AddYears(-20).ToShortDateString(), DateTime.Now.AddYears(2).ToShortDateString()) { }
-    //}
-
 }

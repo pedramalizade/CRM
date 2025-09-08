@@ -1,8 +1,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM", "CRM\CRM.csproj", "{D31902A3-FA73-49C3-9648-58A2404CE0EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Endpoint.WebApi", "CRM-Endpoint-WebApi\CRM.Endpoint.WebApi.csproj", "{588B1DF4-25F7-4298-98D0-5AF900E423AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Application", "CRM-Application\CRM.Application.csproj", "{04C8D0BE-1E8A-439F-9FC1-6F8B8A9DF672}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Domain", "CRM-Domain\CRM.Domain.csproj", "{4592252F-D877-4985-B120-AD2861DA8AFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Infrastructure", "CRM-Infrastrucure\CRM.Infrastructure.csproj", "{58113920-618A-43A7-8EC2-E7DA62A83415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +22,22 @@ Global
 		{D31902A3-FA73-49C3-9648-58A2404CE0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D31902A3-FA73-49C3-9648-58A2404CE0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D31902A3-FA73-49C3-9648-58A2404CE0EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{588B1DF4-25F7-4298-98D0-5AF900E423AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{588B1DF4-25F7-4298-98D0-5AF900E423AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{588B1DF4-25F7-4298-98D0-5AF900E423AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{588B1DF4-25F7-4298-98D0-5AF900E423AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C8D0BE-1E8A-439F-9FC1-6F8B8A9DF672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C8D0BE-1E8A-439F-9FC1-6F8B8A9DF672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C8D0BE-1E8A-439F-9FC1-6F8B8A9DF672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C8D0BE-1E8A-439F-9FC1-6F8B8A9DF672}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4592252F-D877-4985-B120-AD2861DA8AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4592252F-D877-4985-B120-AD2861DA8AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4592252F-D877-4985-B120-AD2861DA8AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4592252F-D877-4985-B120-AD2861DA8AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58113920-618A-43A7-8EC2-E7DA62A83415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58113920-618A-43A7-8EC2-E7DA62A83415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58113920-618A-43A7-8EC2-E7DA62A83415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58113920-618A-43A7-8EC2-E7DA62A83415}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

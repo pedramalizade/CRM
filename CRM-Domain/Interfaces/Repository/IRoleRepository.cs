@@ -1,6 +1,4 @@
-﻿using CRM.Domain.Entities;
-
-namespace CRM_Domain.Interfaces.Repository
+﻿namespace CRM_Domain.Interfaces.Repository
 {
     public interface IRoleRepository
     {

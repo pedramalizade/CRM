@@ -1,11 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM_Domain.Interfaces.Repository;
-using CRM_Domain.Interfaces.Service;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace CRM_Application.Services
+﻿namespace CRM_Application.Services
 {
     public class UserService : IUserService
     {
@@ -49,26 +42,73 @@ namespace CRM_Application.Services
         public async Task<bool> RegisterUserAsync(User user)
         {
             if (await _userRepository.ExistsByLoginAsync(user.Login))
-                return false;
+                throw new Exception("این نام کاربری قبلاً ثبت شده است.");
+
+            var role = await _roleRepository.GetByIdAsync(user.RoleId);
+            if (role == null)
+                throw new Exception("نقش انتخاب‌شده معتبر نیست.");
 
             user.Password = HashPassword(user.Password);
             user.IsDeleted = 0;
+
             await _userRepository.AddAsync(user);
             return true;
+            //if (await _userRepository.ExistsByLoginAsync(user.Login))
+            //    return false;
+
+            //user.Password = HashPassword(user.Password);
+            //user.IsDeleted = 0;
+            //await _userRepository.AddAsync(user);
+            //return true;
         }
 
         public async Task<bool> UpdateUserAsync(User user)
         {
+            // بررسی نقش معتبر
+            var role = await _roleRepository.GetByIdAsync(user.RoleId);
+            if (role == null)
+                throw new Exception("نقش انتخاب‌شده معتبر نیست.");
+
+            // جلوگیری از حذف آخرین ادمین
+            var oldUser = await _userRepository.GetByIdAsync(user.Id);
+            if (oldUser == null)
+                throw new Exception("کاربر یافت نشد.");
+
+            if (oldUser.RoleId == 1 && user.RoleId != 1) // تغییر نقش Admin به چیز دیگه
+            {
+                int adminCount = await _userRepository.CountAdminsAsync();
+                if (adminCount <= 1)
+                    throw new Exception("حداقل یک مدیر سیستم باید وجود داشته باشد.");
+            }
+
+            // هش کردن پسورد در صورت نیاز
             if (!IsMD5(user.Password))
                 user.Password = HashPassword(user.Password);
 
             await _userRepository.UpdateAsync(user);
             return true;
+            //if (!IsMD5(user.Password))
+            //    user.Password = HashPassword(user.Password);
+
+            //await _userRepository.UpdateAsync(user);
+            //return true;
         }
 
         public async Task DeleteUserAsync(int id)
         {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+                throw new Exception("کاربر یافت نشد.");
+
+            if (user.RoleId == 1) // ادمین
+            {
+                int adminCount = await _userRepository.CountAdminsAsync();
+                if (adminCount <= 1)
+                    throw new Exception("نمی‌توان آخرین مدیر سیستم را حذف کرد.");
+            }
+
             await _userRepository.DeleteAsync(id);
+            //await _userRepository.DeleteAsync(id);
         }
 
         private string HashPassword(string password)

@@ -1,6 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM_Domain.DTOs;
-
+﻿
 namespace CRM_Domain.Interfaces.Service
 {
     public interface ICompanyService

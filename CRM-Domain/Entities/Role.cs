@@ -1,5 +1,4 @@
-﻿using System;
-namespace CRM.Domain.Entities
+﻿namespace CRM.Domain.Entities
 {
     public class Role
     {

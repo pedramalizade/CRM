@@ -1,13 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM.Infrastructure.Db;
-using CRM_Domain.Interfaces.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CRM.Infrastructure.Repositories
+﻿namespace CRM.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {

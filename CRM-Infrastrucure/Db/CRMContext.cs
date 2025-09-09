@@ -1,7 +1,3 @@
-
-using CRM.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
 namespace CRM.Infrastructure.Db
 {
     public class CRMContext : DbContext

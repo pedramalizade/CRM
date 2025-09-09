@@ -1,0 +1,10 @@
+﻿global using System.Globalization;
+global using CRM.Domain.Entities;
+global using CRM_Domain.Interfaces.Repository;
+global using CRM_Domain.Interfaces.Service;
+global using CRM.Application.Helpers;
+global using Microsoft.EntityFrameworkCore;
+global using System.Linq.Dynamic.Core;
+global using System.Security.Cryptography;
+global using System.Text;
+global using System.Text.RegularExpressions;

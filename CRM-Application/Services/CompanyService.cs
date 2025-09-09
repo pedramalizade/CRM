@@ -1,11 +1,4 @@
-﻿using CRM.Application.Helpers;
-using CRM.Domain.Entities;
-using CRM_Domain.Interfaces.Repository;
-using CRM_Domain.Interfaces.Service;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core;             
-
-namespace CRM_Application.Services
+﻿namespace CRM_Application.Services
 {
     public class CompanyService : ICompanyService
     {

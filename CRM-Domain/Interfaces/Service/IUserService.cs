@@ -1,6 +1,4 @@
-﻿using CRM.Domain.Entities;
-
-namespace CRM_Domain.Interfaces.Service
+﻿namespace CRM_Domain.Interfaces.Service
 {
     public interface IUserService
     {

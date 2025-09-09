@@ -1,10 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM_Application.Services;
-using CRM_Domain.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace CRM_Endpoint_WebApi.Controllers
+﻿namespace CRM_Endpoint_WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -46,24 +40,46 @@ namespace CRM_Endpoint_WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            bool success = await _userService.RegisterUserAsync(user);
-            if (success)
-                return Ok("ثبت‌نام موفق بود");
-            return BadRequest("نام کاربری قبلاً استفاده شده است");
+            try
+            {
+                await _userService.RegisterUserAsync(user);
+                return Ok("ثبت‌نام با موفقیت انجام شد.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> Update([FromBody] User user)
+        public async Task<IActionResult> Update(int id, [FromBody] User user)
         {
-            await _userService.UpdateUserAsync(user);
-            return Ok("اطلاعات کاربر به‌روزرسانی شد");
+            if (id != user.Id)
+                return BadRequest("شناسه کاربر معتبر نیست.");
+
+            try
+            {
+                await _userService.UpdateUserAsync(user);
+                return Ok("ویرایش با موفقیت انجام شد.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _userService.DeleteUserAsync(id);
-            return Ok("کاربر با موفقیت حذف شد");
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                return Ok("کاربر حذف شد.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

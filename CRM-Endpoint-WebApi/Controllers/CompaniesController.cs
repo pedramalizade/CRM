@@ -1,10 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM_Domain.Interfaces.Service;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace CRM_Endpoint_WebApi.Controllers
+﻿namespace CRM_Endpoint_WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

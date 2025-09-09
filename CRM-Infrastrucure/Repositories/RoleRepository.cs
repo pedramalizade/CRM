@@ -1,8 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM.Infrastructure.Db;
-using CRM_Domain.Interfaces.Repository;
-
-namespace CRM.Infrastructure.Repositories
+﻿namespace CRM.Infrastructure.Repositories
 {
     public class RoleRepository : IRoleRepository
     {

@@ -1,9 +1,4 @@
-﻿using CRM.Domain.Entities;
-using CRM.Infrastructure.Db;
-using CRM_Domain.Interfaces.Repository;
-using Microsoft.EntityFrameworkCore;
-
-namespace CRM_Infrastrucure.Repositories
+﻿namespace CRM_Infrastrucure.Repositories
 {
     public class CompanyRepository : ICompanyRepository
     {

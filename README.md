@@ -1,5 +1,14 @@
-# CRM
-> Simple CRM model in C# using .NET 3.1 created for Programing classes.
+A simple and scalable Customer Relationship Management (CRM) system built with .NET technologies to manage customers, business operations, and internal workflows more efficiently.
+
+---
+
+## 📌 Overview
+
+This project is a CRM (Customer Relationship Management) system designed to help businesses organize customer information, manage interactions, and improve workflow efficiency.
+
+The goal of this project is to provide a structured and maintainable architecture for handling customer-related operations and business processes.
+
+
 
 ## Table of contents
 - [CRM](#crm)
